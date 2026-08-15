@@ -156,6 +156,31 @@ navigator.clipboard.writeText(document.getElementById('output').innerText);
 alert('✅ JSON sudah dicopy bro!');
 }
 </script>
+<script>
+document.querySelector('.btn-generate').addEventListener('click', function() {
+  
+  const jenis = document.querySelector('select').value;
+  const scene = document.querySelectorAll('textarea')[0].value;
+  const lokasi = document.querySelectorAll('input[type="text"]')[0].value;
+  const jumlah = document.querySelectorAll('input[type="number"]')[0].value;
+  const dialog = document.querySelectorAll('textarea')[1].value;
 
+  const hasil = `Buatkan ${jumlah} scene video ${jenis}.
+Setting: ${lokasi}
+Deskripsi: ${scene}
+Dialog: "${dialog}"
+Style: Ultra Real Anatomy, HD, natural lighting, cinematic`;
+
+  // Bikin area hasil muncul
+  let output = document.getElementById('hasil-prompt');
+  if(!output){
+    output = document.createElement('div');
+    output.id = 'hasil-prompt';
+    output.style = "margin-top:20px; padding:15px; background:#1a1a1a; border-radius:8px; color:white; white-space:pre-wrap;";
+    document.querySelector('.btn-generate').after(output);
+  }
+  output.innerText = hasil;
+});
+</script>
 </body>
 </html>
