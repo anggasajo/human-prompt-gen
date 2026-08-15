@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Prompt Generator - Human Ultra Real V8.2</title>
+<style>
+*{box-sizing:border-box;font-family: 'Segoe UI', sans-serif}
+body{background:#0f1117;color:#e0e0e0;padding:20px;max-width:800px;margin:auto}
+h1{text-align:center;color:#00d4ff}
+.card{background:#1a1d23;padding:20px;border-radius:12px;margin-bottom:20px;border:1px solid #2a2f3a}
+label{display:block;margin:12px 0 6px;font-weight:600;color:#aaa}
+input, select, textarea{width:100%;padding:12px;border-radius:8px;border:1px solid #333;background:#0f1117;color:#fff;font-size:14px}
+input[type="file"]{padding:8px}
+textarea{min-height:80px;resize:vertical}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+button{background:#00d4ff;color:#000;border:none;padding:14px;border-radius:8px;font-weight:700;font-size:16px;cursor:pointer;width:100%;margin-top:10px}
+button:hover{background:#00b8e6}
+#output{background:#000;color:#00ff88;padding:15px;border-radius:8px;white-space:pre-wrap;font-family:monospace;font-size:12px;max-height:400px;overflow:auto}
+.note{font-size:12px;color:#888}
+.preview{display:flex;gap:10px;margin-top:10px;flex-wrap:wrap}
+.preview img{width:100px;height:100px;object-fit:cover;border-radius:8px;border:2px solid #00d4ff}
+</style>
+</head>
+<body>
+
+<h1>🎬 HUMAN PROMPT GENERATOR V8.2</h1>
+<p style="text-align:center" class="note">Ultra Real Anatomy + 1 Upload Multi File</p>
+
+<div class="card">
+<label>1. Jenis Konten</label>
+<select id="jenis_konten">
+<option value="ugc_review">UGC Review</option>
+<option value="travel_vlog">Travel Vlog</option>
+<option value="food_review">Food Review</option>
+<option value="reaction">Reaction</option>
+<option value="storytelling">Storytelling</option>
+<option value="tutorial">Tutorial</option>
+<option value="get_ready">Get Ready With Me</option>
+<option value="day_in_life">Day In My Life</option>
+<option value="comedy_skit">Comedy Skit</option>
+<option value="dance_trend">Dance Trend</option>
+<option value="unboxing">Unboxing</option>
+<option value="qna">QNA</option>
+<option value="before_after">Before After</option>
+<option value="aesthetic">Aesthetic</option>
+<option value="fitness">Fitness</option>
+<option value="shopping_haul">Shopping Haul</option>
+<option value="ranting">Ranting / Curhat</option>
+<option value="promo">Promo / Jualan</option>
+</select>
+
+<label>2. Upload Referensi - 1x Pilih Banyak <span class="note">Urutan: 1.Wajah 2.Baju 3.Background</span></label>
+<input type="file" id="uploadMulti" multiple accept="image/*" />
+<div class="preview" id="preview"></div>
+
+<div class="grid">
+<div>
+<label>3. Deskripsi Scene</label>
+<textarea id="deskripsi" placeholder="Contoh: Makan bakso panas di warung pinggir jalan"></textarea>
+</div>
+<div>
+<label>4. Lokasi</label>
+<input id="lokasi" placeholder="Contoh: Warung Bakso Malang" />
+</div>
+</div>
+
+<div class="grid">
+<div>
+<label>5. Jumlah Scene</label>
+<input type="number" id="jumlah_scene" value="3" min="1" max="5" />
+</div>
+<div>
+<label>6. Dialog</label>
+<input id="dialog" placeholder="Contoh: Eh gila sedap gila ni bakso" />
+</div>
+</div>
+
+<button onclick="generatePrompt()">⚡ GENERATE PROMPT</button>
+</div>
+
+<div class="card">
+<label>OUTPUT JSON - Copy ini ke AI</label>
+<div id="output">Klik Generate dulu...</div>
+<button onclick="copyOutput()">📋 COPY JSON</button>
+</div>
+
+<script>
+let uploadedFiles = [];
+
+document.getElementById('uploadMulti').addEventListener('change', function(e){
+uploadedFiles = Array.from(e.target.files);
+const preview = document.getElementById('preview');
+preview.innerHTML = '';
+uploadedFiles.forEach((file, i)=>{
+const reader = new FileReader();
+reader.onload = ev => {
+preview.innerHTML += <img src="${ev.target.result}" title="${i+1}. ${file.name}" />`
+}
+reader.readAsDataURL(file);
+})
+})
+
+function generatePrompt(){
+// Simulasi ID upload. Nanti ganti dengan ID dari server kau
+const ref_ids = uploadedFiles.map((f,i)=> uploaded_ref_${Date.now()}_${i});
+
+const master = {
+"website_inputs": {
+"jenis_konten": document.getElementById('jenis_konten').value,
+"upload_referensi_multi": ref_ids,
+"deskripsi_scene": document.getElementById('deskripsi').value,
+"jumlah_scene": parseInt(document.getElementById('jumlah_scene').value),
+"catatan_upload": "Urutan: 1=Face 2=Outfit 3=Background"
+},
+"version": "master_v8_ultra_anatomy",
+"references": {
+"face_reference": ref_ids[0] || "",
+"outfit_reference": ref_ids[1] || "",
+"background_reference": ref_ids[2] || ""
+},
+"task": "animate",
+"anatomy_lock": {
+"skeleton": "Real human skeletal proportions. Clavicle visible, rib cage natural, pelvis width correct, limb ratios 1:1 with reference. No Barbie proportions",
+"muscles": "Subtle muscle definition. Deltoid, bicep, forearm, calf visible but natural. Soft fat layer on belly and thighs. No 6-pack unless reference has it",
+"skin": "Real human skin. Visible pores 0.1mm, peach fuzz on cheeks, 1-2 small moles, slight redness on nose, natural skin texture. Subsurface scattering. No beauty filter, no plastic, no airbrush",
+"eyes": "Wet cornea with light reflection, iris texture with radial lines, pupil reacts to light, visible eye bags, tiny red veins, micro saccades 2-3 per second, irregular blinking",
+"mouth": "Real teeth with slight yellow tint, uneven size, tongue visible when speaking, saliva on lips, lip lines, cupid bow natural. Lip sync includes tongue and throat movement",
+"hands": "5 fingers exact. Knuckles, nail beds, cuticles, veins on back of hand, fingerprints. Proper bone length. No fused fingers",
+"face_micro_details": "Eyebrow individual hairs, eyelashes cast shadow, cheek fat pad moves when smile, nasolabial fold deepens, jaw muscle flex when talking"
+},
+"character_lock": {
+"identity": The exact woman from face_reference${ref_ids[0] || ""}. 100% identical down to 1px, "face": "Same face shape, iris color, eyebrow arch, lip shape, nose bridge, ear shape as reference", "glasses": "clear frame glasses with realistic reflection, slight fingerprint smudge, slips down nose 2mm then pushed up", "hair": "high ponytail with blonde highlights. Individual strands, flyaways, baby hair on forehead. Physics: delay 0.2s when head turns, reacts to wind", "outfit":Use EXACT outfit from outfit_reference {ref_ids[2] || ""}. ${document.getElementById('deskripsi').value}`,
+"environment": "Wind 2-3 m/s moving hair and jacket. Dust particles in sun rays. Depth of field f/2.8. Atmosphere haze"
+},
+"technical": {
+"aspect_ratio": "9:16",
+"duration": "7-8 seconds",
+"render": "Photorealistic, 4k, 10bit color, subsurface scattering on skin, ray traced reflections, motion blur 180 degree shutter"
+},
+"negative_prompt": [
+"24fps", "choppy", "stiff", "robotic", "bad lip sync",
+"perfect skin", "plastic", "AI face", "doll", "mannequin", "CGI look",
+"dead eyes", "static pose", "floating", "wrong anatomy",
+"6 fingers", "fused fingers", "long neck", "tiny head", "big eyes",
+"Indonesian language", "character change", "different outfit",
+"cartoon", "3d render", "blurry", "overly smooth", "wax figure"
+ ]
+};
+
+document.getElementById('output').innerText = JSON.stringify(master, null, 2);
+}
+
+function copyOutput(){
+navigator.clipboard.writeText(document.getElementById('output').innerText);
+alert('✅ JSON sudah dicopy bro!');
+}
+</script>
+
+</body>
+</html>
